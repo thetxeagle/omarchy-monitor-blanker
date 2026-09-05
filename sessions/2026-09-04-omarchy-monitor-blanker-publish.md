@@ -46,13 +46,16 @@ plugin repository authored by `thetxeagle`.
 - `bash -n monitor-blanker`: passed.
 - `python3 -m json.tool manifest.json`: passed.
 - Commit `3cc49a8` created locally.
-- Push blocked because the configured GitHub token is invalid and SSH is unavailable.
+- GitHub CLI authentication was re-established outside the sandbox using the
+  `thetxeagle` account with `repo` and `workflow` scopes.
+- `git push origin main`: passed; remote `main` now contains commits through
+  `6556caa`.
 - Preview asset validated as a 448×256 PNG.
 
 ## Next Steps
 
 - [x] Validate, stage, and commit the repository.
-- [ ] Authenticate GitHub and push the repository.
+- [x] Authenticate GitHub and push the repository.
 - [ ] Owner review marketplace submission title and body.
 - [ ] Submit marketplace issue after owner approval.
 
