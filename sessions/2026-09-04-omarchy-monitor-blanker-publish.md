@@ -55,6 +55,8 @@ plugin repository authored by `thetxeagle`.
 - Renamed the active plugin ID to `io.github.omarchy.monitor-blanker` in the live Omarchy shell
   configuration and repository metadata so the bar command no longer exposes
   the maintainer handle.
+- Verified the repository is public and submitted marketplace issue
+  https://github.com/omacom/omarchy-plugin-marketplace/issues/4989.
 - Preview asset validated as a 448×256 PNG.
 
 ## Next Steps
@@ -62,8 +64,9 @@ plugin repository authored by `thetxeagle`.
 - [x] Validate, stage, and commit the repository.
 - [x] Authenticate GitHub and push the repository.
 - [x] Rename the plugin ID to `io.github.omarchy.monitor-blanker` locally and in the repository.
-- [ ] Owner review marketplace submission title and body.
-- [ ] Submit marketplace issue after owner approval.
+- [x] Owner review marketplace submission title and body.
+- [x] Submit marketplace issue after owner approval.
+- [ ] Wait for marketplace validation and maintainer approval.
 
 ## Notes
 
