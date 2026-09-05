@@ -9,7 +9,7 @@ import qs.Ui
 
 BarWidget {
   id: root
-  moduleName: "monitor-blanker"
+  moduleName: "io.github.omarchy.monitor-blanker"
 
   readonly property string scriptPath: Qt.resolvedUrl("monitor-blanker").toString().replace(/^file:\/\//, "")
   property bool popupOpen: false

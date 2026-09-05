@@ -8,7 +8,8 @@
 
 ### Changed
 
-- Use the neutral `monitor-blanker` plugin ID in bar commands and configuration.
+- Use the namespaced `io.github.omarchy.monitor-blanker` plugin ID required by
+  the marketplace, without exposing the maintainer handle.
 
 ## 1.0.3 - 2026-09-04
 

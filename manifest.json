@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "monitor-blanker",
+  "id": "io.github.omarchy.monitor-blanker",
   "name": "Monitor Blanker",
   "version": "1.0.3",
   "author": "thetxeagle",

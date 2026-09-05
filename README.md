@@ -42,7 +42,7 @@ installing or enabling it.
 ## Configure placement
 
 ```sh
-omarchy bar move monitor-blanker --section right
+omarchy bar move io.github.omarchy.monitor-blanker --section right
 ```
 
 ## Validate locally
@@ -55,7 +55,7 @@ bash -n monitor-blanker
 ## Uninstall
 
 ```sh
-omarchy plugin remove monitor-blanker
+omarchy plugin remove io.github.omarchy.monitor-blanker
 ```
 
 ## License
