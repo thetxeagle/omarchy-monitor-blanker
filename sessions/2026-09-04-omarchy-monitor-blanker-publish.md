@@ -57,6 +57,11 @@ plugin repository authored by `thetxeagle`.
   the maintainer handle.
 - Verified the repository is public and submitted marketplace issue
   https://github.com/omacom/omarchy-plugin-marketplace/issues/4989.
+- Marketplace baseline reviewed: the only capability flag was a false positive
+  from the word `sudo` in a README sentence stating it was not required. The
+  wording was changed to `elevated privileges` in commit `457b174`, and the
+  issue was edited to request a fresh scan. The old report remains visible
+  until the marketplace bot processes the new event.
 - Preview asset validated as a 448×256 PNG.
 
 ## Next Steps
