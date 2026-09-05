@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Add a preview screenshot to the repository and README.
+
 ## 1.0.3 - 2026-09-04
 
 ### Changed

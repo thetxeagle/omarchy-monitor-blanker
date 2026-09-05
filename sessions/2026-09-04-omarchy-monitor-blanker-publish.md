@@ -15,6 +15,7 @@ plugin repository authored by `thetxeagle`.
 - Added root Omarchy plugin manifest.
 - Added bar widget and Disable/Restore helper.
 - Added installation, configuration, behavior, validation, and uninstall docs.
+- Added `preview.png` and embedded it in the README.
 - Added changelog and updated MIT copyright attribution.
 
 ## Files Changed
@@ -26,6 +27,7 @@ plugin repository authored by `thetxeagle`.
 - `monitor-blanker`
 - `CHANGELOG.md`
 - `sessions/2026-09-04-omarchy-monitor-blanker-publish.md`
+- `preview.png`
 
 ### Modified
 
@@ -40,13 +42,17 @@ plugin repository authored by `thetxeagle`.
 
 ## Testing Notes
 
-- `omarchy plugin validate .`: pending final repository validation.
-- `bash -n monitor-blanker`: pending final repository validation.
-- `python3 -m json.tool manifest.json`: pending final repository validation.
+- `omarchy plugin validate .`: passed.
+- `bash -n monitor-blanker`: passed.
+- `python3 -m json.tool manifest.json`: passed.
+- Commit `3cc49a8` created locally.
+- Push blocked because the configured GitHub token is invalid and SSH is unavailable.
+- Preview asset validated as a 448×256 PNG.
 
 ## Next Steps
 
-- [ ] Validate, stage, commit, and push the repository.
+- [x] Validate, stage, and commit the repository.
+- [ ] Authenticate GitHub and push the repository.
 - [ ] Owner review marketplace submission title and body.
 - [ ] Submit marketplace issue after owner approval.
 

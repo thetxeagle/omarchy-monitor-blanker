@@ -5,6 +5,8 @@ An Omarchy bar widget for disabling and restoring individual monitors while gami
 Click the bar icon to open a compact dropdown listing every active or disabled
 monitor. Each row exposes the appropriate **Disable** or **Restore** action.
 
+![Monitor Blanker dropdown](preview.png)
+
 ## Features
 
 - **Per-monitor controls** — Disable one output without touching the others.
