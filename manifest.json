@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "soulshocker.monitor-sleep",
+  "name": "Monitor Blanker",
+  "version": "1.0.3",
+  "author": "thetxeagle",
+  "license": "MIT",
+  "description": "Disable or restore individual monitors from an Omarchy bar dropdown",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Monitor Blanker",
+    "description": "Disable or restore individual monitors from an Omarchy bar dropdown",
+    "category": "System",
+    "defaultSection": "right",
+    "allowMultiple": false
+  }
+}

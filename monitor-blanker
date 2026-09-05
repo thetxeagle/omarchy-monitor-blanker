@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+safe_output() {
+  [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]]
+}
+
+monitor_eval() {
+  hyprctl eval "$1" >/dev/null
+}
+
+action="${1:-}"
+target="${2:-}"
+
+safe_output "$target" || {
+  echo "No valid monitor output supplied." >&2
+  exit 2
+}
+
+case "$action" in
+  disable)
+    monitor_eval "hl.monitor({ output = '$target', disabled = true })"
+    notify-send -a "Monitor Blanker" "Monitor disabled" "$target" 2>/dev/null || true
+    ;;
+  restore)
+    # Re-enable the output, then reload the user's Lua monitor rules so
+    # explicit positions, modes, scales, and transforms are reapplied exactly.
+    monitor_eval "hl.monitor({ output = '$target', disabled = false })"
+    hyprctl reload >/dev/null
+    notify-send -a "Monitor Blanker" "Monitor restored" "$target" 2>/dev/null || true
+    ;;
+  *)
+    echo "Usage: $0 {disable|restore} OUTPUT" >&2
+    exit 2
+    ;;
+esac
