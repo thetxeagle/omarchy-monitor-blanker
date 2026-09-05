@@ -42,7 +42,7 @@ installing or enabling it.
 ## Configure placement
 
 ```sh
-omarchy bar move soulshocker.monitor-sleep --section right
+omarchy bar move monitor-blanker --section right
 ```
 
 ## Validate locally
@@ -55,7 +55,7 @@ bash -n monitor-blanker
 ## Uninstall
 
 ```sh
-omarchy plugin remove soulshocker.monitor-sleep
+omarchy plugin remove monitor-blanker
 ```
 
 ## License

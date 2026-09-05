@@ -6,6 +6,10 @@
 
 - Add a preview screenshot to the repository and README.
 
+### Changed
+
+- Use the neutral `monitor-blanker` plugin ID in bar commands and configuration.
+
 ## 1.0.3 - 2026-09-04
 
 ### Changed

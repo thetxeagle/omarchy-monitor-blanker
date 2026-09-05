@@ -36,7 +36,7 @@ plugin repository authored by `thetxeagle`.
 
 ## Decisions Made
 
-- Keep the existing unique plugin ID `soulshocker.monitor-sleep` for compatibility with the local installation and Omarchy shell layout.
+- Use the neutral plugin ID `monitor-blanker` so the bar command does not expose the maintainer handle.
 - Use `thetxeagle` as the displayed author and repository owner.
 - Publish Disable/Restore only; DPMS Sleep/Wake/Toggle was removed because it re-awoke immediately on this hardware/session.
 
@@ -50,12 +50,16 @@ plugin repository authored by `thetxeagle`.
   `thetxeagle` account with `repo` and `workflow` scopes.
 - `git push origin main`: passed; remote `main` now contains commits through
   `6556caa`.
+- Renamed the active plugin ID to `monitor-blanker` in the live Omarchy shell
+  configuration and repository metadata so the bar command no longer exposes
+  the maintainer handle.
 - Preview asset validated as a 448×256 PNG.
 
 ## Next Steps
 
 - [x] Validate, stage, and commit the repository.
 - [x] Authenticate GitHub and push the repository.
+- [x] Rename the plugin ID to `monitor-blanker` locally and in the repository.
 - [ ] Owner review marketplace submission title and body.
 - [ ] Submit marketplace issue after owner approval.
 
