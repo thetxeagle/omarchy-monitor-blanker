@@ -18,7 +18,7 @@ monitor. Each row exposes the appropriate **Disable** or **Restore** action.
 
 - Omarchy Quattro with Omarchy Shell.
 - Hyprland 0.55 or newer is recommended because the plugin uses `hyprctl eval` and `hl.monitor(...)`.
-- No external packages, DDC/CI access, or `sudo` are required.
+- No external packages, DDC/CI access, or elevated privileges are required.
 
 ## Install
 

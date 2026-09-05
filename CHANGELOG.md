@@ -10,6 +10,7 @@
 
 - Use the namespaced `io.github.omarchy.monitor-blanker` plugin ID required by
   the marketplace, without exposing the maintainer handle.
+- Clarify that the plugin requires no elevated privileges.
 
 ## 1.0.3 - 2026-09-04
 
