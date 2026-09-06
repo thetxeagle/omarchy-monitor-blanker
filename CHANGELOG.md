@@ -4,10 +4,11 @@
 
 ### Added
 
-- Add a preview screenshot to the repository and README.
+- Add a preview screenshot showing the stable Disable/Restore panel.
 
 ### Changed
 
+- Update the preview screenshot to show Refresh config and Restart shell actions.
 - Use the namespaced `io.github.omarchy.monitor-blanker` plugin ID required by
   the marketplace, without exposing the maintainer handle.
 - Clarify that the plugin requires no elevated privileges.

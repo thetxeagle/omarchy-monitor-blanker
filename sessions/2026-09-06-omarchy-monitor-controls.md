@@ -58,6 +58,7 @@ Restored the Omarchy monitor blanker bar widget to stable Disable/Restore contro
 - Made edge attachment mandatory on drag release so monitors cannot be left floating apart on the canvas.
 - Reverted the arrangement editor and related persistence to the stable Disable/Restore implementation; retained only Refresh config and Restart shell controls.
 - Removed stale changelog claims for friendly display identity, resolution/refresh details, rotation, and saved arrangement behavior.
+- Replaced `preview.png` with the user-provided stable Disable/Restore panel screenshot.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps
