@@ -21,6 +21,7 @@
 - Avoid reloading Hyprland during normal saves and startup applies; reserve reloads for the explicit re-apply action.
 - Keep last-known disabled monitors visible with a Restore action.
 - Add a dedicated Restart shell button.
+- Ensure the plugin is placed in the active right bar layout when shell IPC is unavailable during installation.
 
 ## 1.1.0 - 2026-09-06
 

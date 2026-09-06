@@ -54,6 +54,7 @@ Expanded the Omarchy monitor blanker bar widget from disable/restore-only contro
 - Added edge snapping and overlap validation so saved layouts cannot intentionally apply overlapping monitors.
 - Changed startup/save application to avoid an automatic Hyprland reload loop; explicit re-apply remains the reload action.
 - Added last-known monitor state caching for disabled outputs and a dedicated shell restart control.
+- Restored the widget's active bar placement in `~/.config/omarchy/shell.json`; the plugin had been registered but absent from `bar.layout.right`.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps
