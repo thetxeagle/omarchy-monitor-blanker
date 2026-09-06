@@ -1,4 +1,4 @@
-# Session: Add monitor identity, arrangement, and refresh controls
+# Session: Restore stable monitor controls and accurate docs
 
 **Date**: 2026-09-06
 **Branch**: main
@@ -7,7 +7,7 @@
 
 ## Summary
 
-Expanded the Omarchy monitor blanker bar widget from disable/restore-only controls into a monitor configuration panel with friendly display identity, resolution/refresh details, rotation, saved arrangement, and re-apply behavior.
+Restored the Omarchy monitor blanker bar widget to stable Disable/Restore controls with Refresh config and Restart shell actions. Corrected the changelog so reverted experimental monitor identity and arrangement features are not presented as current behavior.
 
 ## Work Completed
 
@@ -57,6 +57,7 @@ Expanded the Omarchy monitor blanker bar widget from disable/restore-only contro
 - Restored the widget's active bar placement in `~/.config/omarchy/shell.json`; the plugin had been registered but absent from `bar.layout.right`.
 - Made edge attachment mandatory on drag release so monitors cannot be left floating apart on the canvas.
 - Reverted the arrangement editor and related persistence to the stable Disable/Restore implementation; retained only Refresh config and Restart shell controls.
+- Removed stale changelog claims for friendly display identity, resolution/refresh details, rotation, and saved arrangement behavior.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps

@@ -11,29 +11,13 @@
 - Use the namespaced `io.github.omarchy.monitor-blanker` plugin ID required by
   the marketplace, without exposing the maintainer handle.
 - Clarify that the plugin requires no elevated privileges.
-- Replace the re-apply switch with an explicit button and show saved/unsaved arrangement status.
 
 ### Fixed
 
-- Correct the arrangement save argument validation so the saved JSON and managed Hyprland Lua overlay are actually written.
-- Keep arrangement tiles fixed-size and centered instead of scaling them to native monitor resolution.
-- Snap dragged monitors to neighboring edges and reject overlapping arrangements before applying them.
-- Make edge snapping mandatory on every drag release instead of limiting it to a small proximity window.
-- Avoid reloading Hyprland during normal saves and startup applies; reserve reloads for the explicit re-apply action.
 - Keep last-known disabled monitors visible with a Restore action.
 - Add a dedicated Restart shell button.
 - Ensure the plugin is placed in the active right bar layout when shell IPC is unavailable during installation.
 - Revert the experimental arrangement, rotation, and friendly-name UI to the stable Disable/Restore panel.
-
-## 1.1.0 - 2026-09-06
-
-### Added
-
-- Show monitor make/model, connector name, focused state, resolution, and refresh rate.
-- Add per-monitor rotation controls for 0°, 90°, 180°, and 270°.
-- Add saved X/Y arrangement controls under `~/.config/omarchy-monitor-blanker/monitors.json`.
-- Replace coordinate inputs with a drag-and-drop arrangement canvas.
-- Add a re-apply toggle that reloads Hyprland and reapplies the saved monitor configuration.
 
 ## 1.0.3 - 2026-09-04
 
