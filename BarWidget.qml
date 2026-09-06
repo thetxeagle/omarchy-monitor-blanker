@@ -139,7 +139,9 @@ BarWidget {
       if (!valid) continue
       if (!bestSnapped || candidate.distance < bestSnapped.distance) bestSnapped = candidate
     }
-    return bestSnapped ? { x: Math.round(bestSnapped.x), y: Math.round(bestSnapped.y) } : { x: Math.round(x), y: Math.round(y) }
+    return bestSnapped
+      ? { x: Math.round(bestSnapped.x), y: Math.round(bestSnapped.y) }
+      : { x: coordinate(monitor, "x"), y: coordinate(monitor, "y") }
   }
 
   function saveArrangement() {
