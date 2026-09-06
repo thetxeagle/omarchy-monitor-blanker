@@ -39,6 +39,11 @@ BarWidget {
     refreshTimer.restart()
   }
 
+  function restartShell() {
+    root.close()
+    Quickshell.execDetached(["omarchy-restart-shell"])
+  }
+
   function cleanVendor(value) {
     return String(value || "").replace(/\b(Electric Company|Electronics Co\.?\s*Ltd\.?|Technology Co\.?\s*Ltd\.?|Corporation|Incorporated|Inc\.?|Corp\.?)\b/gi, "").replace(/\s+/g, " ").trim()
   }
@@ -238,7 +243,7 @@ BarWidget {
 
   Process {
     id: monitorInfoProcess
-    command: ["bash", "-lc", "hyprctl monitors all -j | jq -c '[.[] | {name, make, model, description, x, y, width, height, refreshRate, scale, transform, disabled, focused}]'"]
+    command: [root.scriptPath, "state"]
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: {
@@ -452,6 +457,14 @@ BarWidget {
         Button {
           text: "Re-apply config"
           onClicked: root.forceRefresh()
+        }
+      }
+      RowLayout {
+        width: column.width
+        Item { Layout.fillWidth: true }
+        Button {
+          text: "Restart shell"
+          onClicked: root.restartShell()
         }
       }
     }

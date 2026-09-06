@@ -20,6 +20,7 @@ Identical monitors are distinguished by their connector name, for example
 - **Rotation control** — Apply 0°, 90°, 180°, or 270° per monitor.
 - **Saved arrangement** — Drag displays into position; tiles snap to neighboring edges and overlapping layouts are rejected before applying. Saved layouts live at `~/.config/omarchy-monitor-blanker/monitors.json`.
 - **Re-apply control** — Reload Hyprland and re-apply the saved arrangement when a display returns in a bad state.
+- **Shell recovery** — Restart Omarchy Shell directly from the panel.
 - **Layout-safe restore** — Reloads your canonical Lua monitor configuration so explicit positions, modes, scales, and transforms return correctly.
 - **Omarchy-native UI** — Uses a theme-aware bar widget and dropdown panel.
 
@@ -39,6 +40,10 @@ Click the monitor icon in the bar, then use the monitor rows and Arrangement
 section. Saving an arrangement stores a small JSON file in your user config;
 the plugin applies it when the widget starts and after saving. **Re-apply
 config** additionally reloads Hyprland before applying it.
+
+Disabled outputs remain in the panel using a last-known monitor cache, so they
+can still be restored even when Hyprland temporarily omits them from its live
+monitor list.
 
 When an arrangement is saved, the plugin also adds a managed `dofile(...)`
 include to `~/.config/hypr/monitors.lua` and writes its monitor rules to the
