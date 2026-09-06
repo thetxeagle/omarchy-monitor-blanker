@@ -17,6 +17,8 @@
 
 - Correct the arrangement save argument validation so the saved JSON and managed Hyprland Lua overlay are actually written.
 - Keep arrangement tiles fixed-size and centered instead of scaling them to native monitor resolution.
+- Snap dragged monitors to neighboring edges and reject overlapping arrangements before applying them.
+- Avoid reloading Hyprland during normal saves and startup applies; reserve reloads for the explicit re-apply action.
 
 ## 1.1.0 - 2026-09-06
 

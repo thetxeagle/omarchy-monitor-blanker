@@ -15,6 +15,36 @@ current_monitor_json() {
   hyprctl monitors all -j | jq -e -c --arg name "$1" '.[] | select(.name == $name)'
 }
 
+validate_arrangement_file() {
+  local file="$1" name x y transform info width height raw_width raw_height scale rect other_name other_x other_y other_width other_height
+  local -a rects=()
+  while IFS=$'\t' read -r name x y transform; do
+    safe_output "$name" && safe_int "$x" && safe_int "$y" && safe_transform "$transform" || return 1
+    info="$(current_monitor_json "$name" 2>/dev/null || true)"
+    [[ -n "$info" ]] || continue
+    raw_width="$(jq -r '.width' <<<"$info")"
+    raw_height="$(jq -r '.height' <<<"$info")"
+    scale="$(jq -r '.scale // 1' <<<"$info")"
+    if [[ "$transform" == 1 || "$transform" == 3 ]]; then
+      printf -v width '%s' "$(awk -v w="$raw_height" -v s="$scale" 'BEGIN { print w / s }')"
+      printf -v height '%s' "$(awk -v w="$raw_width" -v s="$scale" 'BEGIN { print w / s }')"
+    else
+      printf -v width '%s' "$(awk -v w="$raw_width" -v s="$scale" 'BEGIN { print w / s }')"
+      printf -v height '%s' "$(awk -v w="$raw_height" -v s="$scale" 'BEGIN { print w / s }')"
+    fi
+    for rect in "${rects[@]}"; do
+      IFS='|' read -r other_name other_x other_y other_width other_height <<<"$rect"
+      if awk -v ax="$x" -v ay="$y" -v aw="$width" -v ah="$height" \
+        -v bx="$other_x" -v by="$other_y" -v bw="$other_width" -v bh="$other_height" \
+        'BEGIN { exit ! (ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by) }'; then
+        echo "Arrangement overlaps $name and $other_name." >&2
+        return 1
+      fi
+    done
+    rects+=("$name|$x|$y|$width|$height")
+  done < <(jq -r '.[] | [.name, .x, .y, (.transform // 0)] | @tsv' "$file")
+}
+
 persist_transform() {
   local name="$1" transform="$2" tmp_file
   [[ -f "$config_file" ]] || return 0
@@ -55,6 +85,7 @@ write_lua_config() {
 apply_saved_config() {
   [[ -f "$config_file" ]] || return 0
   jq -e 'if type == "array" then . else error("arrangement must be an array") end' "$config_file" >/dev/null
+  validate_arrangement_file "$config_file"
   while IFS=$'\t' read -r name x y transform; do
     safe_output "$name" && safe_int "$x" && safe_int "$y" && safe_transform "$transform" || continue
     info="$(current_monitor_json "$name" 2>/dev/null || true)"
@@ -111,10 +142,10 @@ case "$action" in
         jq -n --arg name "$name" --argjson x "$x" --argjson y "$y" --argjson transform "$transform" '{name:$name,x:$x,y:$y,transform:$transform}'
       done
     } | jq -s . > "$tmp_file"
+    validate_arrangement_file "$tmp_file" || { echo "Arrangement overlaps another monitor; nothing was applied." >&2; exit 3; }
     mv "$tmp_file" "$config_file"
     trap - EXIT
     write_lua_config
-    hyprctl reload >/dev/null
     apply_saved_config
     notify-send -a "Monitor Blanker" "Monitor arrangement saved" 2>/dev/null || true
     ;;
@@ -123,8 +154,11 @@ case "$action" in
     apply_saved_config
     notify-send -a "Monitor Blanker" "Monitor configuration re-applied" 2>/dev/null || true
     ;;
+  apply)
+    apply_saved_config
+    ;;
   *)
-    echo "Usage: $0 {disable|restore|rotate|save-arrangement|refresh}" >&2
+    echo "Usage: $0 {disable|restore|rotate|save-arrangement|refresh|apply}" >&2
     exit 2
     ;;
 esac

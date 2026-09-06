@@ -86,6 +86,71 @@ BarWidget {
     root.arrangementStatus = "Unsaved changes"
   }
 
+  function monitorFootprint(monitor) {
+    var scale = Number(monitor.scale || 1)
+    var width = Number(monitor.width || 1) / scale
+    var height = Number(monitor.height || 1) / scale
+    if (Number(monitor.transform || 0) === 1 || Number(monitor.transform || 0) === 3)
+      return { width: height, height: width }
+    return { width: width, height: height }
+  }
+
+  function monitorRect(monitor, x, y) {
+    var footprint = monitorFootprint(monitor)
+    return { x: x, y: y, width: footprint.width, height: footprint.height }
+  }
+
+  function rectanglesOverlap(a, b) {
+    return a.x < b.x + b.width && a.x + a.width > b.x
+      && a.y < b.y + b.height && a.y + a.height > b.y
+  }
+
+  function snappedPosition(monitor, x, y) {
+    var footprint = monitorFootprint(monitor)
+    var raw = monitorRect(monitor, x, y)
+    var others = []
+    var list = enabledMonitors()
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].name === monitor.name) continue
+      others.push({ monitor: list[i], rect: monitorRect(list[i], coordinate(list[i], "x"), coordinate(list[i], "y")) })
+    }
+
+    var candidates = [{ x: x, y: y, distance: 0, snapped: false }]
+    var snapDistance = 260
+    for (var j = 0; j < others.length; j++) {
+      var other = others[j].rect
+      if (Math.abs(y - other.y) <= snapDistance)
+        candidates.push({ x: other.x + other.width, y: other.y, distance: Math.abs(x - (other.x + other.width)), snapped: true })
+      if (Math.abs(y - other.y) <= snapDistance)
+        candidates.push({ x: other.x - footprint.width, y: other.y, distance: Math.abs(x - (other.x - footprint.width)), snapped: true })
+      if (Math.abs(x - other.x) <= snapDistance)
+        candidates.push({ x: other.x, y: other.y + other.height, distance: Math.abs(y - (other.y + other.height)), snapped: true })
+      if (Math.abs(x - other.x) <= snapDistance)
+        candidates.push({ x: other.x, y: other.y - footprint.height, distance: Math.abs(y - (other.y - footprint.height)), snapped: true })
+      // If the user dropped on top of a monitor, only edge placements are valid.
+      if (rectanglesOverlap(raw, other)) candidates[0].invalid = true
+    }
+
+    var bestRaw = null
+    var bestSnapped = null
+    for (var k = 0; k < candidates.length; k++) {
+      var candidate = candidates[k]
+      var candidateRect = monitorRect(monitor, candidate.x, candidate.y)
+      var valid = true
+      for (var n = 0; n < others.length; n++) {
+        if (rectanglesOverlap(candidateRect, others[n].rect)) { valid = false; break }
+      }
+      if (!valid || (candidate.invalid && !candidate.snapped)) continue
+      if (candidate.snapped) {
+        if (!bestSnapped || candidate.distance < bestSnapped.distance) bestSnapped = candidate
+      } else {
+        bestRaw = candidate
+      }
+    }
+    var best = bestSnapped || bestRaw
+    return best ? { x: Math.round(best.x), y: Math.round(best.y) } : { x: Math.round(x), y: Math.round(y) }
+  }
+
   function saveArrangement() {
     var args = [root.scriptPath, "save-arrangement"]
     for (var i = 0; i < root.monitors.length; i++) {
@@ -109,8 +174,9 @@ BarWidget {
     for (var i = 0; i < list.length; i++) {
       var monitor = list[i]
       var scale = Number(monitor.scale || 1)
-      var width = Number(monitor.width || 1) / scale
-      var height = Number(monitor.height || 1) / scale
+      var footprint = root.monitorFootprint(monitor)
+      var width = footprint.width
+      var height = footprint.height
       var x = coordinate(monitor, "x")
       var y = coordinate(monitor, "y")
       minX = Math.min(minX, x); minY = Math.min(minY, y)
@@ -130,22 +196,30 @@ BarWidget {
   function arrangementOffsetY(bounds, scale) { return Math.max(8, (arrangementCanvas.height - bounds.height * scale) / 2) }
   function boxX(monitor) {
     var bounds = arrangementBounds(), scale = arrangementScale()
-    var x = arrangementOffsetX(bounds, scale) + (coordinate(monitor, "x") - bounds.minX) * scale - boxWidth(monitor) / 2
+    var footprint = monitorFootprint(monitor)
+    var x = arrangementOffsetX(bounds, scale) + (coordinate(monitor, "x") + footprint.width / 2 - bounds.minX) * scale - boxWidth(monitor) / 2
     return Math.max(0, Math.min(arrangementCanvas.width - boxWidth(monitor), x))
   }
   function boxY(monitor) {
     var bounds = arrangementBounds(), scale = arrangementScale()
-    var y = arrangementOffsetY(bounds, scale) + (coordinate(monitor, "y") - bounds.minY) * scale - boxHeight(monitor) / 2
+    var footprint = monitorFootprint(monitor)
+    var y = arrangementOffsetY(bounds, scale) + (coordinate(monitor, "y") + footprint.height / 2 - bounds.minY) * scale - boxHeight(monitor) / 2
     return Math.max(0, Math.min(arrangementCanvas.height - boxHeight(monitor), y))
   }
   function boxWidth(monitor) { return 116 }
   function boxHeight(monitor) { return 68 }
-  function canvasX(x, bounds, scale) { return Math.round((x + boxWidth(null) / 2 - arrangementOffsetX(bounds, scale)) / scale + bounds.minX) }
-  function canvasY(y, bounds, scale) { return Math.round((y + boxHeight(null) / 2 - arrangementOffsetY(bounds, scale)) / scale + bounds.minY) }
+  function canvasX(x, monitor, bounds, scale) {
+    var footprint = monitorFootprint(monitor)
+    return Math.round((x + boxWidth(monitor) / 2 - arrangementOffsetX(bounds, scale)) / scale + bounds.minX - footprint.width / 2)
+  }
+  function canvasY(y, monitor, bounds, scale) {
+    var footprint = monitorFootprint(monitor)
+    return Math.round((y + boxHeight(monitor) / 2 - arrangementOffsetY(bounds, scale)) / scale + bounds.minY - footprint.height / 2)
+  }
 
   Component.onCompleted: {
     refreshMonitors()
-    Quickshell.execDetached([root.scriptPath, "refresh"])
+    Quickshell.execDetached([root.scriptPath, "apply"])
   }
   visible: true
   implicitWidth: button.implicitWidth
@@ -349,9 +423,10 @@ BarWidget {
                 monitorBox.y = nextY
               }
               onReleased: {
-                var nextX = root.canvasX(monitorBox.x, monitorBox.dragBounds, monitorBox.dragScale)
-                var nextY = root.canvasY(monitorBox.y, monitorBox.dragBounds, monitorBox.dragScale)
-                root.setMonitorPosition(monitorData, nextX, nextY)
+                var nextX = root.canvasX(monitorBox.x, monitorData, monitorBox.dragBounds, monitorBox.dragScale)
+                var nextY = root.canvasY(monitorBox.y, monitorData, monitorBox.dragBounds, monitorBox.dragScale)
+                var snapped = root.snappedPosition(monitorData, nextX, nextY)
+                root.setMonitorPosition(monitorData, snapped.x, snapped.y)
                 monitorBox.dragging = false
                 cursorShape = Qt.OpenHandCursor
               }

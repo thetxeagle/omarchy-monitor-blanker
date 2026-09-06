@@ -51,6 +51,8 @@ Expanded the Omarchy monitor blanker bar widget from disable/restore-only contro
 - Replaced the ambiguous re-apply switch with an explicit button and added arrangement status text.
 - Fixed the save argument validation and changed the canvas to fixed-size centered tiles with a larger editing area.
 - Added a managed Lua include so saved arrangements participate in Hyprland reloads.
+- Added edge snapping and overlap validation so saved layouts cannot intentionally apply overlapping monitors.
+- Changed startup/save application to avoid an automatic Hyprland reload loop; explicit re-apply remains the reload action.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps
