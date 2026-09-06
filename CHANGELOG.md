@@ -8,7 +8,8 @@
 
 ### Changed
 
-- Update the preview screenshot to show Refresh config and Restart shell actions.
+- Update the preview screenshot to show active Disable, disabled Restore, Refresh config, and Restart shell actions.
+- Version the README preview URL so GitHub does not reuse a stale cached image.
 - Use the namespaced `io.github.omarchy.monitor-blanker` plugin ID required by
   the marketplace, without exposing the maintainer handle.
 - Clarify that the plugin requires no elevated privileges.
