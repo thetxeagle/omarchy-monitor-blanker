@@ -84,6 +84,37 @@ BarWidget {
     refreshTimer.restart()
   }
 
+  function enabledMonitors() { return root.monitors.filter(function(m) { return !m.disabled }) }
+
+  function arrangementBounds() {
+    var list = enabledMonitors()
+    if (!list.length) return { minX: 0, minY: 0, width: 1, height: 1 }
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (var i = 0; i < list.length; i++) {
+      var monitor = list[i]
+      var scale = Number(monitor.scale || 1)
+      var width = Number(monitor.width || 1) / scale
+      var height = Number(monitor.height || 1) / scale
+      var x = coordinate(monitor, "x")
+      var y = coordinate(monitor, "y")
+      minX = Math.min(minX, x); minY = Math.min(minY, y)
+      maxX = Math.max(maxX, x + width); maxY = Math.max(maxY, y + height)
+    }
+    return { minX: minX, minY: minY, width: Math.max(1, maxX - minX), height: Math.max(1, maxY - minY) }
+  }
+
+  function arrangementScale() {
+    var bounds = arrangementBounds()
+    return Math.min((arrangementCanvas.width - 16) / bounds.width, (arrangementCanvas.height - 16) / bounds.height)
+  }
+
+  function boxX(monitor) { return 8 + (coordinate(monitor, "x") - arrangementBounds().minX) * arrangementScale() }
+  function boxY(monitor) { return 8 + (coordinate(monitor, "y") - arrangementBounds().minY) * arrangementScale() }
+  function boxWidth(monitor) { return Math.max(56, Number(monitor.width || 1) / Number(monitor.scale || 1) * arrangementScale()) }
+  function boxHeight(monitor) { return Math.max(38, Number(monitor.height || 1) / Number(monitor.scale || 1) * arrangementScale()) }
+  function canvasX(x) { return Math.round((x - 8) / arrangementScale() + arrangementBounds().minX) }
+  function canvasY(y) { return Math.round((y - 8) / arrangementScale() + arrangementBounds().minY) }
+
   Component.onCompleted: {
     refreshMonitors()
     Quickshell.execDetached([root.scriptPath, "refresh"])
@@ -224,39 +255,75 @@ BarWidget {
       }
 
       Text {
-        text: "Set each monitor's layout position. Changes are saved for the next refresh."
+        text: "Drag displays into position, then save the arrangement."
         color: Qt.darker(root.bar.foreground, 1.4)
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.caption
         wrapMode: Text.WordWrap
       }
 
-      Repeater {
-        model: root.monitors.filter(function(m) { return !m.disabled })
-        delegate: RowLayout {
-          width: column.width
-          spacing: Style.space(6)
+      Rectangle {
+        id: arrangementCanvas
+        width: column.width
+        height: Style.space(170)
+        radius: Style.space(6)
+        color: Qt.darker(root.bar.background, 1.25)
+        border.color: Qt.darker(root.bar.foreground, 1.8)
+        clip: true
 
-          Text {
-            Layout.fillWidth: true
-            text: root.friendlyName(modelData)
-            color: root.bar.foreground
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
-            elide: Text.ElideRight
-          }
+        Repeater {
+          model: root.enabledMonitors()
+          delegate: Rectangle {
+            id: monitorBox
+            property var monitorData: modelData
+            property bool dragging: false
+            property real dragOffsetX: 0
+            property real dragOffsetY: 0
+            x: root.boxX(monitorData)
+            y: root.boxY(monitorData)
+            width: Math.min(arrangementCanvas.width - 16, root.boxWidth(monitorData))
+            height: Math.min(arrangementCanvas.height - 16, root.boxHeight(monitorData))
+            radius: Style.space(4)
+            color: monitorData.focused ? Qt.lighter(root.bar.foreground, 1.25) : Qt.darker(root.bar.foreground, 1.35)
+            border.color: root.bar.foreground
+            border.width: 1
 
-          Text { text: "X"; color: root.bar.foreground }
-          SpinBox {
-            from: -32768; to: 32767; stepSize: 1
-            value: root.coordinate(modelData, "x")
-            onValueModified: root.setCoordinate(modelData, "x", value)
-          }
-          Text { text: "Y"; color: root.bar.foreground }
-          SpinBox {
-            from: -32768; to: 32767; stepSize: 1
-            value: root.coordinate(modelData, "y")
-            onValueModified: root.setCoordinate(modelData, "y", value)
+            Text {
+              anchors.centerIn: parent
+              width: parent.width - Style.space(8)
+              text: monitorData.name
+              color: root.bar.background
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.caption
+              horizontalAlignment: Text.AlignHCenter
+              elide: Text.ElideRight
+            }
+
+            MouseArea {
+              anchors.fill: parent
+              cursorShape: Qt.OpenHandCursor
+              onPressed: {
+                monitorBox.dragging = true
+                monitorBox.dragOffsetX = mouseX
+                monitorBox.dragOffsetY = mouseY
+                cursorShape = Qt.ClosedHandCursor
+              }
+              onPositionChanged: {
+                if (!pressed) return
+                var nextX = Math.max(8, Math.min(arrangementCanvas.width - monitorBox.width - 8, mouseX + monitorBox.x - monitorBox.dragOffsetX))
+                var nextY = Math.max(8, Math.min(arrangementCanvas.height - monitorBox.height - 8, mouseY + monitorBox.y - monitorBox.dragOffsetY))
+                monitorBox.x = nextX
+                monitorBox.y = nextY
+              }
+              onReleased: {
+                root.setCoordinate(monitorData, "x", root.canvasX(monitorBox.x))
+                root.setCoordinate(monitorData, "y", root.canvasY(monitorBox.y))
+                monitorBox.dragging = false
+                monitorBox.x = root.boxX(monitorData)
+                monitorBox.y = root.boxY(monitorData)
+                cursorShape = Qt.OpenHandCursor
+              }
+            }
           }
         }
       }

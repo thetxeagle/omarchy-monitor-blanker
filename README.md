@@ -15,7 +15,7 @@ resolution, refresh rate, rotation, and the appropriate **Disable** or
 - **State-aware actions** — Active monitors show **Disable**; disabled monitors show **Restore**.
 - **Friendly display identity** — Shows the monitor make/model with its connector, such as `Samsung Odyssey G81SF (DP-1) — Focused`.
 - **Rotation control** — Apply 0°, 90°, 180°, or 270° per monitor.
-- **Saved arrangement** — Edit monitor X/Y positions and save them to `~/.config/omarchy-monitor-blanker/monitors.json`.
+- **Saved arrangement** — Drag displays into position and save them to `~/.config/omarchy-monitor-blanker/monitors.json`.
 - **Re-apply control** — Reload Hyprland and re-apply the saved arrangement when a display returns in a bad state.
 - **Layout-safe restore** — Reloads your canonical Lua monitor configuration so explicit positions, modes, scales, and transforms return correctly.
 - **Omarchy-native UI** — Uses a theme-aware bar widget and dropdown panel.

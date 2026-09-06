@@ -19,6 +19,7 @@
 - Show monitor make/model, connector name, focused state, resolution, and refresh rate.
 - Add per-monitor rotation controls for 0°, 90°, 180°, and 270°.
 - Add saved X/Y arrangement controls under `~/.config/omarchy-monitor-blanker/monitors.json`.
+- Replace coordinate inputs with a drag-and-drop arrangement canvas.
 - Add a re-apply toggle that reloads Hyprland and reapplies the saved monitor configuration.
 
 ## 1.0.3 - 2026-09-04
