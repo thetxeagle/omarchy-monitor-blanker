@@ -18,7 +18,7 @@ Identical monitors are distinguished by their connector name, for example
 - **State-aware actions** — Active monitors show **Disable**; disabled monitors show **Restore**.
 - **Friendly display identity** — Shows the monitor make/model with its connector, such as `Samsung Odyssey G81SF (DP-1) — Focused`.
 - **Rotation control** — Apply 0°, 90°, 180°, or 270° per monitor.
-- **Saved arrangement** — Drag displays into position; tiles snap to neighboring edges and overlapping layouts are rejected before applying. Saved layouts live at `~/.config/omarchy-monitor-blanker/monitors.json`.
+- **Saved arrangement** — Drag displays into position; every drop magnetically attaches the tile to the nearest legal neighboring edge, with no gap or overlap. Saved layouts live at `~/.config/omarchy-monitor-blanker/monitors.json`.
 - **Re-apply control** — Reload Hyprland and re-apply the saved arrangement when a display returns in a bad state.
 - **Shell recovery** — Restart Omarchy Shell directly from the panel.
 - **Layout-safe restore** — Reloads your canonical Lua monitor configuration so explicit positions, modes, scales, and transforms return correctly.

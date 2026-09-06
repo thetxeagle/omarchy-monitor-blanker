@@ -55,6 +55,7 @@ Expanded the Omarchy monitor blanker bar widget from disable/restore-only contro
 - Changed startup/save application to avoid an automatic Hyprland reload loop; explicit re-apply remains the reload action.
 - Added last-known monitor state caching for disabled outputs and a dedicated shell restart control.
 - Restored the widget's active bar placement in `~/.config/omarchy/shell.json`; the plugin had been registered but absent from `bar.layout.right`.
+- Made edge attachment mandatory on drag release so monitors cannot be left floating apart on the canvas.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps

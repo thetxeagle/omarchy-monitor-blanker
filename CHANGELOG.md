@@ -18,6 +18,7 @@
 - Correct the arrangement save argument validation so the saved JSON and managed Hyprland Lua overlay are actually written.
 - Keep arrangement tiles fixed-size and centered instead of scaling them to native monitor resolution.
 - Snap dragged monitors to neighboring edges and reject overlapping arrangements before applying them.
+- Make edge snapping mandatory on every drag release instead of limiting it to a small proximity window.
 - Avoid reloading Hyprland during normal saves and startup applies; reserve reloads for the explicit re-apply action.
 - Keep last-known disabled monitors visible with a Restore action.
 - Add a dedicated Restart shell button.

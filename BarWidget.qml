@@ -112,7 +112,6 @@ BarWidget {
 
   function snappedPosition(monitor, x, y) {
     var footprint = monitorFootprint(monitor)
-    var raw = monitorRect(monitor, x, y)
     var others = []
     var list = enabledMonitors()
     for (var i = 0; i < list.length; i++) {
@@ -120,23 +119,15 @@ BarWidget {
       others.push({ monitor: list[i], rect: monitorRect(list[i], coordinate(list[i], "x"), coordinate(list[i], "y")) })
     }
 
-    var candidates = [{ x: x, y: y, distance: 0, snapped: false }]
-    var snapDistance = 260
+    var candidates = []
     for (var j = 0; j < others.length; j++) {
       var other = others[j].rect
-      if (Math.abs(y - other.y) <= snapDistance)
-        candidates.push({ x: other.x + other.width, y: other.y, distance: Math.abs(x - (other.x + other.width)), snapped: true })
-      if (Math.abs(y - other.y) <= snapDistance)
-        candidates.push({ x: other.x - footprint.width, y: other.y, distance: Math.abs(x - (other.x - footprint.width)), snapped: true })
-      if (Math.abs(x - other.x) <= snapDistance)
-        candidates.push({ x: other.x, y: other.y + other.height, distance: Math.abs(y - (other.y + other.height)), snapped: true })
-      if (Math.abs(x - other.x) <= snapDistance)
-        candidates.push({ x: other.x, y: other.y - footprint.height, distance: Math.abs(y - (other.y - footprint.height)), snapped: true })
-      // If the user dropped on top of a monitor, only edge placements are valid.
-      if (rectanglesOverlap(raw, other)) candidates[0].invalid = true
+      candidates.push({ x: other.x + other.width, y: other.y, distance: Math.hypot(x - (other.x + other.width), y - other.y), snapped: true })
+      candidates.push({ x: other.x - footprint.width, y: other.y, distance: Math.hypot(x - (other.x - footprint.width), y - other.y), snapped: true })
+      candidates.push({ x: other.x, y: other.y + other.height, distance: Math.hypot(x - other.x, y - (other.y + other.height)), snapped: true })
+      candidates.push({ x: other.x, y: other.y - footprint.height, distance: Math.hypot(x - other.x, y - (other.y - footprint.height)), snapped: true })
     }
 
-    var bestRaw = null
     var bestSnapped = null
     for (var k = 0; k < candidates.length; k++) {
       var candidate = candidates[k]
@@ -145,15 +136,10 @@ BarWidget {
       for (var n = 0; n < others.length; n++) {
         if (rectanglesOverlap(candidateRect, others[n].rect)) { valid = false; break }
       }
-      if (!valid || (candidate.invalid && !candidate.snapped)) continue
-      if (candidate.snapped) {
-        if (!bestSnapped || candidate.distance < bestSnapped.distance) bestSnapped = candidate
-      } else {
-        bestRaw = candidate
-      }
+      if (!valid) continue
+      if (!bestSnapped || candidate.distance < bestSnapped.distance) bestSnapped = candidate
     }
-    var best = bestSnapped || bestRaw
-    return best ? { x: Math.round(best.x), y: Math.round(best.y) } : { x: Math.round(x), y: Math.round(y) }
+    return bestSnapped ? { x: Math.round(bestSnapped.x), y: Math.round(bestSnapped.y) } : { x: Math.round(x), y: Math.round(y) }
   }
 
   function saveArrangement() {
