@@ -7,6 +7,9 @@ monitor. Each row shows the EDID display name, connector, focused state,
 resolution, refresh rate, rotation, and the appropriate **Disable** or
 **Restore** action.
 
+Identical monitors are distinguished by their connector name, for example
+`Samsung Odyssey G81SF (DP-1)` and `Samsung Odyssey G81SF (DP-2)`.
+
 ![Monitor Blanker dropdown](preview.png)
 
 ## Features
@@ -34,8 +37,8 @@ omarchy plugin add https://github.com/thetxeagle/omarchy-monitor-blanker.git --e
 
 Click the monitor icon in the bar, then use the monitor rows and Arrangement
 section. Saving an arrangement stores a small JSON file in your user config;
-the plugin re-applies it when the widget starts and when **Re-apply config** is
-toggled.
+the plugin re-applies it when the widget starts, after saving, and when
+**Re-apply config** is pressed.
 
 ## Important behavior
 

@@ -15,6 +15,7 @@ BarWidget {
   property var monitors: []
   property var arrangement: ({})
   property bool arrangementDirty: false
+  property string arrangementStatus: "Arrangement saved"
   readonly property bool opened: popupOpen
 
   function open() { popupOpen = true; refreshMonitors() }
@@ -70,6 +71,7 @@ BarWidget {
     next[monitor.name][axis] = Math.round(Number(value) || 0)
     root.arrangement = next
     root.arrangementDirty = true
+    root.arrangementStatus = "Unsaved changes"
   }
 
   function saveArrangement() {
@@ -80,7 +82,9 @@ BarWidget {
       args.push(monitor.name, String(coordinate(monitor, "x")), String(coordinate(monitor, "y")))
     }
     root.arrangementDirty = false
+    root.arrangementStatus = "Applying saved arrangement..."
     Quickshell.execDetached(args)
+    root.arrangementStatus = "Arrangement saved and applied"
     refreshTimer.restart()
   }
 
@@ -331,14 +335,19 @@ BarWidget {
       RowLayout {
         width: column.width
         Button {
-          text: root.arrangementDirty ? "Save arrangement" : "Arrangement saved"
+          text: "Save arrangement"
           enabled: root.arrangementDirty
           onClicked: root.saveArrangement()
         }
         Item { Layout.fillWidth: true }
-        Switch {
+        Text {
+          text: root.arrangementStatus
+          color: Qt.darker(root.bar.foreground, 1.4)
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+        }
+        Button {
           text: "Re-apply config"
-          checked: false
           onClicked: root.forceRefresh()
         }
       }

@@ -11,6 +11,7 @@
 - Use the namespaced `io.github.omarchy.monitor-blanker` plugin ID required by
   the marketplace, without exposing the maintainer handle.
 - Clarify that the plugin requires no elevated privileges.
+- Replace the re-apply switch with an explicit button and show saved/unsaved arrangement status.
 
 ## 1.1.0 - 2026-09-06
 

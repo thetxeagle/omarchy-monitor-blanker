@@ -48,6 +48,7 @@ Expanded the Omarchy monitor blanker bar widget from disable/restore-only contro
 - `omarchy plugin validate .`: completed without validation output.
 - Installed copy validated with `omarchy plugin validate ~/.config/omarchy/plugins/io.github.omarchy.monitor-blanker`.
 - Installed copy refreshed with `omarchy-shell shell rescanPlugins`.
+- Replaced the ambiguous re-apply switch with an explicit button and added arrangement status text.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps
