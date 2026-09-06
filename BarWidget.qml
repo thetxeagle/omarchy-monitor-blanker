@@ -14,6 +14,7 @@ BarWidget {
   property bool popupOpen: false
   property var monitors: []
   property var arrangement: ({})
+  property var canvasBounds: null
   property bool arrangementDirty: false
   property string arrangementStatus: "Arrangement saved"
   readonly property bool opened: popupOpen
@@ -74,6 +75,17 @@ BarWidget {
     root.arrangementStatus = "Unsaved changes"
   }
 
+  function setMonitorPosition(monitor, x, y) {
+    var next = {}
+    for (var key in root.arrangement) next[key] = root.arrangement[key]
+    if (!next[monitor.name]) next[monitor.name] = { x: monitor.x || 0, y: monitor.y || 0, transform: monitor.transform || 0 }
+    next[monitor.name].x = Math.round(Number(x) || 0)
+    next[monitor.name].y = Math.round(Number(y) || 0)
+    root.arrangement = next
+    root.arrangementDirty = true
+    root.arrangementStatus = "Unsaved changes"
+  }
+
   function saveArrangement() {
     var args = [root.scriptPath, "save-arrangement"]
     for (var i = 0; i < root.monitors.length; i++) {
@@ -90,7 +102,7 @@ BarWidget {
 
   function enabledMonitors() { return root.monitors.filter(function(m) { return !m.disabled }) }
 
-  function arrangementBounds() {
+  function calculateArrangementBounds() {
     var list = enabledMonitors()
     if (!list.length) return { minX: 0, minY: 0, width: 1, height: 1 }
     var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
@@ -107,17 +119,29 @@ BarWidget {
     return { minX: minX, minY: minY, width: Math.max(1, maxX - minX), height: Math.max(1, maxY - minY) }
   }
 
+  function arrangementBounds() { return root.canvasBounds || root.calculateArrangementBounds() }
+
   function arrangementScale() {
     var bounds = arrangementBounds()
     return Math.min((arrangementCanvas.width - 16) / bounds.width, (arrangementCanvas.height - 16) / bounds.height)
   }
 
-  function boxX(monitor) { return 8 + (coordinate(monitor, "x") - arrangementBounds().minX) * arrangementScale() }
-  function boxY(monitor) { return 8 + (coordinate(monitor, "y") - arrangementBounds().minY) * arrangementScale() }
-  function boxWidth(monitor) { return Math.max(56, Number(monitor.width || 1) / Number(monitor.scale || 1) * arrangementScale()) }
-  function boxHeight(monitor) { return Math.max(38, Number(monitor.height || 1) / Number(monitor.scale || 1) * arrangementScale()) }
-  function canvasX(x) { return Math.round((x - 8) / arrangementScale() + arrangementBounds().minX) }
-  function canvasY(y) { return Math.round((y - 8) / arrangementScale() + arrangementBounds().minY) }
+  function arrangementOffsetX(bounds, scale) { return Math.max(8, (arrangementCanvas.width - bounds.width * scale) / 2) }
+  function arrangementOffsetY(bounds, scale) { return Math.max(8, (arrangementCanvas.height - bounds.height * scale) / 2) }
+  function boxX(monitor) {
+    var bounds = arrangementBounds(), scale = arrangementScale()
+    var x = arrangementOffsetX(bounds, scale) + (coordinate(monitor, "x") - bounds.minX) * scale - boxWidth(monitor) / 2
+    return Math.max(0, Math.min(arrangementCanvas.width - boxWidth(monitor), x))
+  }
+  function boxY(monitor) {
+    var bounds = arrangementBounds(), scale = arrangementScale()
+    var y = arrangementOffsetY(bounds, scale) + (coordinate(monitor, "y") - bounds.minY) * scale - boxHeight(monitor) / 2
+    return Math.max(0, Math.min(arrangementCanvas.height - boxHeight(monitor), y))
+  }
+  function boxWidth(monitor) { return 116 }
+  function boxHeight(monitor) { return 68 }
+  function canvasX(x, bounds, scale) { return Math.round((x + boxWidth(null) / 2 - arrangementOffsetX(bounds, scale)) / scale + bounds.minX) }
+  function canvasY(y, bounds, scale) { return Math.round((y + boxHeight(null) / 2 - arrangementOffsetY(bounds, scale)) / scale + bounds.minY) }
 
   Component.onCompleted: {
     refreshMonitors()
@@ -155,6 +179,7 @@ BarWidget {
             }
             root.arrangement = next
           }
+          root.canvasBounds = root.calculateArrangementBounds()
         } catch (e) {
           console.warn("monitor-blanker: unable to read monitor info: " + e)
         }
@@ -269,7 +294,7 @@ BarWidget {
       Rectangle {
         id: arrangementCanvas
         width: column.width
-        height: Style.space(170)
+        height: Style.space(230)
         radius: Style.space(6)
         color: Qt.darker(root.bar.background, 1.25)
         border.color: Qt.darker(root.bar.foreground, 1.8)
@@ -283,6 +308,8 @@ BarWidget {
             property bool dragging: false
             property real dragOffsetX: 0
             property real dragOffsetY: 0
+            property var dragBounds: ({})
+            property real dragScale: 1
             x: root.boxX(monitorData)
             y: root.boxY(monitorData)
             width: Math.min(arrangementCanvas.width - 16, root.boxWidth(monitorData))
@@ -308,23 +335,24 @@ BarWidget {
               cursorShape: Qt.OpenHandCursor
               onPressed: {
                 monitorBox.dragging = true
+                monitorBox.dragBounds = root.arrangementBounds()
+                monitorBox.dragScale = root.arrangementScale()
                 monitorBox.dragOffsetX = mouseX
                 monitorBox.dragOffsetY = mouseY
                 cursorShape = Qt.ClosedHandCursor
               }
               onPositionChanged: {
                 if (!pressed) return
-                var nextX = Math.max(8, Math.min(arrangementCanvas.width - monitorBox.width - 8, mouseX + monitorBox.x - monitorBox.dragOffsetX))
-                var nextY = Math.max(8, Math.min(arrangementCanvas.height - monitorBox.height - 8, mouseY + monitorBox.y - monitorBox.dragOffsetY))
+                var nextX = Math.max(0, Math.min(arrangementCanvas.width - monitorBox.width, mouseX + monitorBox.x - monitorBox.dragOffsetX))
+                var nextY = Math.max(0, Math.min(arrangementCanvas.height - monitorBox.height, mouseY + monitorBox.y - monitorBox.dragOffsetY))
                 monitorBox.x = nextX
                 monitorBox.y = nextY
               }
               onReleased: {
-                root.setCoordinate(monitorData, "x", root.canvasX(monitorBox.x))
-                root.setCoordinate(monitorData, "y", root.canvasY(monitorBox.y))
+                var nextX = root.canvasX(monitorBox.x, monitorBox.dragBounds, monitorBox.dragScale)
+                var nextY = root.canvasY(monitorBox.y, monitorBox.dragBounds, monitorBox.dragScale)
+                root.setMonitorPosition(monitorData, nextX, nextY)
                 monitorBox.dragging = false
-                monitorBox.x = root.boxX(monitorData)
-                monitorBox.y = root.boxY(monitorData)
                 cursorShape = Qt.OpenHandCursor
               }
             }

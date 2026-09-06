@@ -13,6 +13,11 @@
 - Clarify that the plugin requires no elevated privileges.
 - Replace the re-apply switch with an explicit button and show saved/unsaved arrangement status.
 
+### Fixed
+
+- Correct the arrangement save argument validation so the saved JSON and managed Hyprland Lua overlay are actually written.
+- Keep arrangement tiles fixed-size and centered instead of scaling them to native monitor resolution.
+
 ## 1.1.0 - 2026-09-06
 
 ### Added

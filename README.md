@@ -40,6 +40,12 @@ section. Saving an arrangement stores a small JSON file in your user config;
 the plugin re-applies it when the widget starts, after saving, and when
 **Re-apply config** is pressed.
 
+When an arrangement is saved, the plugin also adds a managed `dofile(...)`
+include to `~/.config/hypr/monitors.lua` and writes its monitor rules to the
+plugin config directory. This keeps the saved positions and rotations active
+across Hyprland reloads without replacing your existing monitor comments or
+mode/scale settings.
+
 ## Important behavior
 
 Disabling a monitor removes it from Hyprland's layout, so windows and workspaces

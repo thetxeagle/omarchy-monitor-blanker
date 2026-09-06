@@ -49,6 +49,8 @@ Expanded the Omarchy monitor blanker bar widget from disable/restore-only contro
 - Installed copy validated with `omarchy plugin validate ~/.config/omarchy/plugins/io.github.omarchy.monitor-blanker`.
 - Installed copy refreshed with `omarchy-shell shell rescanPlugins`.
 - Replaced the ambiguous re-apply switch with an explicit button and added arrangement status text.
+- Fixed the save argument validation and changed the canvas to fixed-size centered tiles with a larger editing area.
+- Added a managed Lua include so saved arrangements participate in Hyprland reloads.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps
