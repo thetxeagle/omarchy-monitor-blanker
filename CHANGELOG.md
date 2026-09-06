@@ -23,6 +23,7 @@
 - Keep last-known disabled monitors visible with a Restore action.
 - Add a dedicated Restart shell button.
 - Ensure the plugin is placed in the active right bar layout when shell IPC is unavailable during installation.
+- Revert the experimental arrangement, rotation, and friendly-name UI to the stable Disable/Restore panel.
 
 ## 1.1.0 - 2026-09-06
 

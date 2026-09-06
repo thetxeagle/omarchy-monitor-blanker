@@ -56,12 +56,12 @@ Expanded the Omarchy monitor blanker bar widget from disable/restore-only contro
 - Added last-known monitor state caching for disabled outputs and a dedicated shell restart control.
 - Restored the widget's active bar placement in `~/.config/omarchy/shell.json`; the plugin had been registered but absent from `bar.layout.right`.
 - Made edge attachment mandatory on drag release so monitors cannot be left floating apart on the canvas.
+- Reverted the arrangement editor and related persistence to the stable Disable/Restore implementation; retained only Refresh config and Restart shell controls.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps
 
-- [ ] Install/update the plugin in a live Omarchy shell and verify EDID labels, rotation, save/re-apply, and restore behavior on attached displays.
-- [ ] Live-test dragging, saving, rotation, restore, and re-apply behavior with attached displays.
+- [ ] Install/update the plugin in a live Omarchy shell and verify Disable/Restore, Refresh config, and Restart shell behavior on attached displays.
 
 ## Notes
 
