@@ -12,6 +12,15 @@
   the marketplace, without exposing the maintainer handle.
 - Clarify that the plugin requires no elevated privileges.
 
+## 1.1.0 - 2026-09-06
+
+### Added
+
+- Show monitor make/model, connector name, focused state, resolution, and refresh rate.
+- Add per-monitor rotation controls for 0°, 90°, 180°, and 270°.
+- Add saved X/Y arrangement controls under `~/.config/omarchy-monitor-blanker/monitors.json`.
+- Add a re-apply toggle that reloads Hyprland and reapplies the saved monitor configuration.
+
 ## 1.0.3 - 2026-09-04
 
 ### Changed

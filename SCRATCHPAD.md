@@ -1,6 +1,6 @@
 # Scratchpad
 
-Active session: [Publish Monitor Blanker](sessions/2026-09-04-omarchy-monitor-blanker-publish.md)
+Active session: [Add monitor identity, arrangement, and refresh controls](sessions/2026-09-06-omarchy-monitor-controls.md)
 
-- Validate and publish the repository.
-- Obtain owner approval for the marketplace issue body before submitting.
+- Install/update the plugin in a live Omarchy shell and verify monitor labels, rotation, arrangement save/re-apply, and restore behavior.
+- Consider a graphical drag canvas after live validation if coordinate controls are not sufficient.

@@ -3,7 +3,9 @@
 An Omarchy bar widget for disabling and restoring individual monitors while gaming.
 
 Click the bar icon to open a compact dropdown listing every active or disabled
-monitor. Each row exposes the appropriate **Disable** or **Restore** action.
+monitor. Each row shows the EDID display name, connector, focused state,
+resolution, refresh rate, rotation, and the appropriate **Disable** or
+**Restore** action.
 
 ![Monitor Blanker dropdown](preview.png)
 
@@ -11,6 +13,10 @@ monitor. Each row exposes the appropriate **Disable** or **Restore** action.
 
 - **Per-monitor controls** — Disable one output without touching the others.
 - **State-aware actions** — Active monitors show **Disable**; disabled monitors show **Restore**.
+- **Friendly display identity** — Shows the monitor make/model with its connector, such as `Samsung Odyssey G81SF (DP-1) — Focused`.
+- **Rotation control** — Apply 0°, 90°, 180°, or 270° per monitor.
+- **Saved arrangement** — Edit monitor X/Y positions and save them to `~/.config/omarchy-monitor-blanker/monitors.json`.
+- **Re-apply control** — Reload Hyprland and re-apply the saved arrangement when a display returns in a bad state.
 - **Layout-safe restore** — Reloads your canonical Lua monitor configuration so explicit positions, modes, scales, and transforms return correctly.
 - **Omarchy-native UI** — Uses a theme-aware bar widget and dropdown panel.
 
@@ -26,15 +32,18 @@ monitor. Each row exposes the appropriate **Disable** or **Restore** action.
 omarchy plugin add https://github.com/thetxeagle/omarchy-monitor-blanker.git --enable
 ```
 
-Click the monitor icon in the bar, then use each monitor row's **Disable** or
-**Restore** button.
+Click the monitor icon in the bar, then use the monitor rows and Arrangement
+section. Saving an arrangement stores a small JSON file in your user config;
+the plugin re-applies it when the widget starts and when **Re-apply config** is
+toggled.
 
 ## Important behavior
 
 Disabling a monitor removes it from Hyprland's layout, so windows and workspaces
 may move to another active output. Restore reloads your user's
-`~/.config/hypr/monitors.lua`; keep that file as the source of truth for custom
-positions such as a monitor at `0x-2160` with `transform = 2`.
+`~/.config/hypr/monitors.lua`, then reapplies the saved plugin arrangement.
+Keep `monitors.lua` as the source of truth for modes and scales; the plugin
+stores only positions and transforms.
 
 Plugins run as unsandboxed code inside `omarchy-shell`. Review the source before
 installing or enabling it.

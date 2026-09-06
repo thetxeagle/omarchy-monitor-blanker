@@ -1,36 +1,97 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-safe_output() {
-  [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]]
+safe_output() { [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]]; }
+safe_int() { [[ "${1:-}" =~ ^-?[0-9]+$ ]]; }
+safe_transform() { [[ "${1:-}" =~ ^[0-3]$ ]]; }
+monitor_eval() { hyprctl eval "$1" >/dev/null; }
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy-monitor-blanker"
+config_file="$config_dir/monitors.json"
+
+current_monitor_json() {
+  hyprctl monitors all -j | jq -e -c --arg name "$1" '.[] | select(.name == $name)'
 }
 
-monitor_eval() {
-  hyprctl eval "$1" >/dev/null
+persist_transform() {
+  local name="$1" transform="$2" tmp_file
+  [[ -f "$config_file" ]] || return 0
+  tmp_file="$(mktemp "$config_dir/monitors.json.XXXXXX")"
+  jq --arg name "$name" --argjson transform "$transform" 'map(if .name == $name then .transform = $transform else . end)' "$config_file" > "$tmp_file"
+  mv "$tmp_file" "$config_file"
+}
+
+apply_saved_config() {
+  [[ -f "$config_file" ]] || return 0
+  jq -e 'if type == "array" then . else error("arrangement must be an array") end' "$config_file" >/dev/null
+  while IFS=$'\t' read -r name x y transform; do
+    safe_output "$name" && safe_int "$x" && safe_int "$y" && safe_transform "$transform" || continue
+    info="$(current_monitor_json "$name" 2>/dev/null || true)"
+    [[ -n "$info" ]] || continue
+    width="$(jq -r '.width' <<<"$info")"
+    height="$(jq -r '.height' <<<"$info")"
+    rate="$(jq -r '.refreshRate' <<<"$info")"
+    scale="$(jq -r '.scale // 1' <<<"$info")"
+    monitor_eval "hl.monitor({ output = '$name', mode = '${width}x${height}@${rate}', position = '${x}x${y}', scale = ${scale}, transform = ${transform} })"
+  done < <(jq -r '.[] | [.name, .x, .y, (.transform // 0)] | @tsv' "$config_file")
 }
 
 action="${1:-}"
 target="${2:-}"
 
-safe_output "$target" || {
-  echo "No valid monitor output supplied." >&2
-  exit 2
-}
-
 case "$action" in
   disable)
+    safe_output "$target" || { echo "No valid monitor output supplied." >&2; exit 2; }
     monitor_eval "hl.monitor({ output = '$target', disabled = true })"
     notify-send -a "Monitor Blanker" "Monitor disabled" "$target" 2>/dev/null || true
     ;;
   restore)
-    # Re-enable the output, then reload the user's Lua monitor rules so
-    # explicit positions, modes, scales, and transforms are reapplied exactly.
+    safe_output "$target" || { echo "No valid monitor output supplied." >&2; exit 2; }
     monitor_eval "hl.monitor({ output = '$target', disabled = false })"
     hyprctl reload >/dev/null
+    apply_saved_config
     notify-send -a "Monitor Blanker" "Monitor restored" "$target" 2>/dev/null || true
     ;;
+  rotate)
+    rotation="${3:-}"
+    safe_output "$target" && safe_transform "$rotation" || { echo "Invalid monitor rotation supplied." >&2; exit 2; }
+    info="$(current_monitor_json "$target")"
+    width="$(jq -r '.width' <<<"$info")"
+    height="$(jq -r '.height' <<<"$info")"
+    rate="$(jq -r '.refreshRate' <<<"$info")"
+    scale="$(jq -r '.scale // 1' <<<"$info")"
+    x="$(jq -r '.x' <<<"$info")"
+    y="$(jq -r '.y' <<<"$info")"
+    monitor_eval "hl.monitor({ output = '$target', mode = '${width}x${height}@${rate}', position = '${x}x${y}', scale = ${scale}, transform = ${rotation} })"
+    persist_transform "$target" "$rotation"
+    ;;
+  save-arrangement)
+    (( ( $# - 2 ) % 3 == 0 && $# >= 5 )) || { echo "Usage: $0 save-arrangement OUTPUT X Y ..." >&2; exit 2; }
+    mkdir -p "$config_dir"
+    tmp_file="$(mktemp "$config_dir/monitors.json.XXXXXX")"
+    trap 'rm -f "$tmp_file"' EXIT
+    {
+      for ((i=2; i<=$#; i+=3)); do
+        j=$((i + 1)); k=$((i + 2))
+        name="${!i}"; x="${!j}"; y="${!k}"
+        safe_output "$name" && safe_int "$x" && safe_int "$y" || { echo "Invalid arrangement entry." >&2; exit 2; }
+        info="$(current_monitor_json "$name")"
+        transform="$(jq -r '.transform // 0' <<<"$info")"
+        jq -n --arg name "$name" --argjson x "$x" --argjson y "$y" --argjson transform "$transform" '{name:$name,x:$x,y:$y,transform:$transform}'
+      done
+    } | jq -s . > "$tmp_file"
+    mv "$tmp_file" "$config_file"
+    trap - EXIT
+    apply_saved_config
+    notify-send -a "Monitor Blanker" "Monitor arrangement saved" 2>/dev/null || true
+    ;;
+  refresh)
+    hyprctl reload >/dev/null
+    apply_saved_config
+    notify-send -a "Monitor Blanker" "Monitor configuration re-applied" 2>/dev/null || true
+    ;;
   *)
-    echo "Usage: $0 {disable|restore} OUTPUT" >&2
+    echo "Usage: $0 {disable|restore|rotate|save-arrangement|refresh}" >&2
     exit 2
     ;;
 esac
