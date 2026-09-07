@@ -61,6 +61,7 @@ Restored the Omarchy monitor blanker bar widget to stable Disable/Restore contro
 - Replaced `preview.png` with the user-provided stable Disable/Restore panel screenshot.
 - Posted the preview and documentation correction to marketplace issue #4989 for the next listing refresh.
 - Versioned the README preview URL after GitHub continued serving the previous cached image.
+- Opened marketplace Verify/update issue #5359 for commit `45aba84d7b315d777bf1ee543645f1aead5922ed`; validation was still pending at handoff.
 - `qmllint` was not installed in the environment.
 
 ## Next Steps
